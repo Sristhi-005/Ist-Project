@@ -1,0 +1,5 @@
+html,body{height:100%;margin:0;font-family:Segoe UI,Roboto,Arial,sans-serif;background:#f6f8fb;color:#111}
+main{max-width:720px;margin:8vh auto;padding:2rem;background:#fff;border-radius:8px;box-shadow:0 6px 24px rgba(12,24,40,0.08)}
+h1{margin-top:0;color:#0b5cff}
+a{color:#0b5cff}
+code{background:#f3f4f6;padding:0.15rem 0.35rem;border-radius:4px}
