@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import type { AnalysisReport } from "@/lib/analyzer";
+import { analyzeInput, type AnalysisReport } from "@/lib/analyzer";
 
 const features = [
   {
@@ -48,22 +48,15 @@ export default function Home() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ input }),
       });
-      const data = (await response.json()) as AnalysisReport;
-      setReport(data);
+
+      if (response.ok) {
+        const data = (await response.json()) as AnalysisReport;
+        setReport(data);
+      } else {
+        setReport(analyzeInput(input));
+      }
     } catch {
-      setReport({
-        score: 0,
-        summary: "The analyzer could not reach the API. Please try again.",
-        issues: [],
-        recommendations: ["Try again in a moment."],
-        breakdown: {
-          seo: 0,
-          speed: 0,
-          accessibility: 0,
-          security: 0,
-          quality: 0,
-        },
-      });
+      setReport(analyzeInput(input));
     } finally {
       setIsAnalyzing(false);
     }
@@ -84,6 +77,27 @@ export default function Home() {
     window.localStorage.setItem("web-doctor-premium", "true");
     setIsPremium(true);
   };
+
+  const premiumPlans = [
+    {
+      name: "Starter",
+      price: "$19",
+      highlight: false,
+      features: ["3 scans per day", "Basic remediation", "Email support"],
+    },
+    {
+      name: "Pro",
+      price: "$49",
+      highlight: true,
+      features: ["Unlimited scans", "Priority AI insights", "Advanced security flags"],
+    },
+    {
+      name: "Agency",
+      price: "$99",
+      highlight: false,
+      features: ["Team workspaces", "Export-ready reports", "Priority onboarding"],
+    },
+  ];
 
   if (!user) {
     return null;
@@ -274,16 +288,49 @@ export default function Home() {
                 Premium members receive deeper AI guidance, release-ready remediation, and advanced risk scoring for stronger audits.
               </p>
             </div>
-            <button
-              onClick={activatePremium}
-              className="self-start rounded-full bg-amber-400 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-amber-300 md:self-center"
-            >
-              Activate Premium
-            </button>
+            {!isPremium ? (
+              <button
+                onClick={activatePremium}
+                className="self-start rounded-full bg-amber-400 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-amber-300 md:self-center"
+              >
+                Activate Premium
+              </button>
+            ) : (
+              <span className="rounded-full border border-amber-400/30 bg-amber-400/10 px-4 py-2 text-sm font-medium text-amber-200">
+                Premium activated
+              </span>
+            )}
           </div>
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
+        <div className="grid gap-4 lg:grid-cols-3">
+          {premiumPlans.map((plan) => (
+            <div
+              key={plan.name}
+              className={`rounded-[24px] border p-6 ${plan.highlight ? "border-amber-400/40 bg-amber-400/10" : "border-white/10 bg-white/8"}`}
+            >
+              <p className="text-sm font-semibold uppercase tracking-[0.25em] text-cyan-200">{plan.name}</p>
+              <p className="mt-4 text-4xl font-semibold text-white">{plan.price}</p>
+              <p className="mt-2 text-sm text-slate-300">per month</p>
+              <ul className="mt-6 space-y-3 text-sm text-slate-300">
+                {plan.features.map((item) => (
+                  <li key={item} className="flex gap-2">
+                    <span className="text-cyan-300">•</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+              <button
+                onClick={activatePremium}
+                className={`mt-6 w-full rounded-full px-4 py-3 text-sm font-semibold transition ${plan.highlight ? "bg-amber-400 text-slate-950 hover:bg-amber-300" : "border border-white/15 bg-white/10 text-white hover:bg-white/15"}`}
+              >
+                {isPremium ? "Active plan" : "Choose plan"}
+              </button>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-6 grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
           <div className="rounded-[28px] border border-white/10 bg-slate-900/70 p-6 shadow-2xl shadow-slate-950/30">
             <p className="text-sm font-semibold uppercase tracking-[0.3em] text-cyan-200">Product vision</p>
             <h2 className="mt-4 text-3xl font-semibold text-white">
