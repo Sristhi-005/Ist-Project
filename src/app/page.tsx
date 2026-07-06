@@ -25,14 +25,19 @@ export default function Home() {
   const [report, setReport] = useState<AnalysisReport | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [user, setUser] = useState<string | null>(null);
+  const [isPremium, setIsPremium] = useState(false);
 
   useEffect(() => {
     const storedUser = window.localStorage.getItem("web-doctor-user");
+    const premiumFlag = window.localStorage.getItem("web-doctor-premium");
+
     if (!storedUser) {
       router.replace("/login");
       return;
     }
+
     setUser(storedUser);
+    setIsPremium(premiumFlag === "true");
   }, [router]);
 
   const runAnalysis = async () => {
@@ -75,6 +80,11 @@ export default function Home() {
     router.push("/login");
   };
 
+  const activatePremium = () => {
+    window.localStorage.setItem("web-doctor-premium", "true");
+    setIsPremium(true);
+  };
+
   if (!user) {
     return null;
   }
@@ -96,6 +106,18 @@ export default function Home() {
             <span className="rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3 py-1 text-sm text-cyan-200">
               Welcome, {user}
             </span>
+            {isPremium ? (
+              <span className="rounded-full border border-amber-400/30 bg-amber-400/10 px-3 py-1 text-sm text-amber-200">
+                Premium member
+              </span>
+            ) : (
+              <button
+                onClick={activatePremium}
+                className="rounded-full border border-amber-400/30 bg-amber-400/10 px-4 py-2 text-sm font-medium text-amber-100 transition hover:bg-amber-300/20"
+              >
+                Upgrade to Premium
+              </button>
+            )}
             <button
               onClick={logout}
               className="rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/15"
@@ -167,6 +189,12 @@ export default function Home() {
                 </button>
               </div>
 
+              {!isPremium && (
+                <div className="mt-4 rounded-2xl border border-amber-400/20 bg-amber-400/10 p-4 text-sm text-slate-100">
+                  Upgrade to Premium to unlock advanced remediation, detailed security risk flags, and prioritized AI guidance.
+                </div>
+              )}
+
               {report ? (
                 <div className="mt-6 space-y-4">
                   <div className="rounded-2xl border border-cyan-400/20 bg-cyan-400/10 p-4">
@@ -236,7 +264,25 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="features" className="mx-auto max-w-7xl px-6 pb-16 sm:px-8 lg:px-10">
+      <section className="mx-auto max-w-7xl px-6 pb-16 sm:px-8 lg:px-10">
+        <div className="rounded-[28px] border border-amber-400/15 bg-amber-400/5 p-6 shadow-2xl shadow-amber-950/10 mb-8">
+          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-amber-200">Premium tier</p>
+          <div className="mt-4 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div>
+              <h2 className="text-3xl font-semibold text-white">Unlock Premium insights</h2>
+              <p className="mt-3 text-base leading-7 text-slate-300">
+                Premium members receive deeper AI guidance, release-ready remediation, and advanced risk scoring for stronger audits.
+              </p>
+            </div>
+            <button
+              onClick={activatePremium}
+              className="self-start rounded-full bg-amber-400 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-amber-300 md:self-center"
+            >
+              Activate Premium
+            </button>
+          </div>
+        </div>
+
         <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
           <div className="rounded-[28px] border border-white/10 bg-slate-900/70 p-6 shadow-2xl shadow-slate-950/30">
             <p className="text-sm font-semibold uppercase tracking-[0.3em] text-cyan-200">Product vision</p>
