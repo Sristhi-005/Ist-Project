@@ -26,6 +26,8 @@ export default function Home() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [user, setUser] = useState<string | null>(null);
   const [isPremium, setIsPremium] = useState(false);
+  const [depth, setDepth] = useState("balanced");
+  const [includeAi, setIncludeAi] = useState(true);
 
   useEffect(() => {
     const storedUser = window.localStorage.getItem("web-doctor-user");
@@ -203,6 +205,41 @@ export default function Home() {
                 </button>
               </div>
 
+              <div className="mt-4 rounded-2xl border border-white/10 bg-white/5 p-4">
+                <div className="flex items-center justify-between gap-2">
+                  <div>
+                    <p className="text-sm font-semibold text-white">Analysis settings</p>
+                    <p className="text-xs text-slate-400">Tune the scan style for your workflow</p>
+                  </div>
+                  <span className="rounded-full border border-cyan-400/20 bg-cyan-400/10 px-2.5 py-1 text-xs text-cyan-200">
+                    {isPremium ? "Premium mode" : "Standard mode"}
+                  </span>
+                </div>
+                <div className="mt-4 grid gap-3 md:grid-cols-2">
+                  <label className="rounded-2xl border border-white/10 bg-slate-950/70 p-3 text-sm text-slate-300">
+                    <span className="mb-2 block text-xs uppercase tracking-[0.25em] text-slate-400">Depth</span>
+                    <select
+                      value={depth}
+                      onChange={(event) => setDepth(event.target.value)}
+                      className="w-full rounded-xl border border-white/10 bg-slate-900 px-3 py-2 text-sm text-white"
+                    >
+                      <option value="quick">Quick scan</option>
+                      <option value="balanced">Balanced</option>
+                      <option value="deep">Deep audit</option>
+                    </select>
+                  </label>
+                  <label className="rounded-2xl border border-white/10 bg-slate-950/70 p-3 text-sm text-slate-300">
+                    <span className="mb-2 block text-xs uppercase tracking-[0.25em] text-slate-400">AI guidance</span>
+                    <button
+                      onClick={() => setIncludeAi((value) => !value)}
+                      className={`w-full rounded-xl px-3 py-2 text-sm font-medium ${includeAi ? "bg-cyan-400 text-slate-950" : "border border-white/10 bg-slate-900 text-white"}`}
+                    >
+                      {includeAi ? "Enabled" : "Disabled"}
+                    </button>
+                  </label>
+                </div>
+              </div>
+
               {!isPremium && (
                 <div className="mt-4 rounded-2xl border border-amber-400/20 bg-amber-400/10 p-4 text-sm text-slate-100">
                   Upgrade to Premium to unlock advanced remediation, detailed security risk flags, and prioritized AI guidance.
@@ -300,6 +337,11 @@ export default function Home() {
                 Premium activated
               </span>
             )}
+          </div>
+          <div className="mt-6 flex flex-wrap gap-3 text-sm text-slate-300">
+            <span className="rounded-full border border-white/10 bg-slate-900/70 px-3 py-1">Unlimited audits</span>
+            <span className="rounded-full border border-white/10 bg-slate-900/70 px-3 py-1">Priority remediation</span>
+            <span className="rounded-full border border-white/10 bg-slate-900/70 px-3 py-1">Export-ready reports</span>
           </div>
         </div>
 
